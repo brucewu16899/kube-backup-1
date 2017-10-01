@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: footest
+  labels:
+    test: backup
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: my-nginx
+  labels:
+    test: backup
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+        test: backup
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+metadata:
+  name: keyvars
+  labels:
+    test: backup
+data:
+  testdata: |
+    a=1
+    b=2
+    country=Israel
+kind: ConfigMap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx
+  labels:
+    run: my-nginx
+    test: backup
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: my-nginx
