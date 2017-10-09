@@ -59,10 +59,22 @@ set -e
 if [ $success -eq 0 ]; then
   echo "restore namespace flag already exists, not restoring"
 else
-  # whether we restore or not, we now no longer need to restore
-  $kubectl create ns $flagns >/dev/null 2>&1
   # get our most recent backup
-  recentbackup=$($aws s3 ls ${s3target_stripped} --recursive | awk '{print $4}' | sort -nr | head -1)
+  set +e
+  allBackups=$($aws s3 ls ${s3target_stripped} --recursive)
+  success=$?
+  set -e
+
+  # did we succeed?
+  if [ $success -ne 0 ]; then
+    echo "Failed to connect to s3 to retrieve backups. Command was:"
+    echo "   $aws s4 ls ${s3target_stripped} --recursive"
+    echo
+    echo "Check that network connection is good, bucket exists, IAM permissions are correct"
+    echo "This is NOT an indication that there are no backups, but that we had an S3 connection error"
+    exit 1
+  fi
+  recentbackup=$(echo "$allBackups" | awk '{print $4}' | sort -nr | head -1)
   # did we have a most recent one?
   if [ -z "$recentbackup" ]; then
     echo "No recent backup to restore"
@@ -96,6 +108,9 @@ else
     fi
   fi
 fi
+
+# now we no longer need to restore
+$kubectl create ns $flagns >/dev/null 2>&1
 
 
 ##############

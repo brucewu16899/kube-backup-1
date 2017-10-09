@@ -20,6 +20,11 @@ On startup, the container checks the following:
 3. If the namespace does not exist and there are backups, but they are "stale", i.e. older than a specific age, error out.
 4. If the namespace does not exist and there is at least one non-stale backup, perform a restore.
 
+Failure on restore:
+
+* If the restore service _cannot_ connect to S3 for any reason - network, IAM permissioning errors, bucket does not exist - the backup pod will `exit 1`.
+* If the restore service _can_ connect to S3 but the bucket is empty, it has nothing to restore and will continue to regular backup mode
+
 #### Backup
 Backup runs in an infinite loop. Every configurable set of minutes:
 
