@@ -68,7 +68,7 @@ else
   # did we succeed?
   if [ $success -ne 0 ]; then
     echo "Failed to connect to s3 to retrieve backups. Command was:"
-    echo "   $aws s4 ls ${s3target_stripped} --recursive"
+    echo "   $aws s3 ls ${s3target_stripped} --recursive"
     echo
     echo "Check that network connection is good, bucket exists, IAM permissions are correct"
     echo "This is NOT an indication that there are no backups, but that we had an S3 connection error"
