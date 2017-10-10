@@ -155,8 +155,8 @@ while true ; do
       $kubectl --namespace="${ns}" get --export -o=json svc,ingress,rc,secrets,configmap,deployment,ds,statefulset | \
       $jq '.items[] |
           select(.type!="kubernetes.io/service-account-token") |
+          if .spec.clusterIP != null  then (.spec.clusterIP = (.spec.clusterIP | sub("^(?!None$).*"; ""))) else .  end |
           del(
-              .spec.clusterIP,
               .metadata.uid,
               .metadata.selfLink,
               .metadata.resourceVersion,
