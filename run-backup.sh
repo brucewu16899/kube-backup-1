@@ -107,10 +107,10 @@ else
 
     fi
   fi
+  # now we no longer need to restore
+  $kubectl create ns $flagns >/dev/null 2>&1
 fi
 
-# now we no longer need to restore
-$kubectl create ns $flagns >/dev/null 2>&1
 
 
 ##############
